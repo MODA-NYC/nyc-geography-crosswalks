@@ -65,7 +65,7 @@ These dependencies can be installed using:
 
 ```bash
 pip install geopandas pandas requests shapely ipywidgets tqdm
-
+```
 
 ## Getting Started
 
