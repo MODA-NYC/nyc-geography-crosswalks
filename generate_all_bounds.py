@@ -358,6 +358,26 @@ if __name__ == "__main__":
         print("\nCombined GeoDataFrame Tail:")
         print(combined_gdf.tail())
 
+        # --- Fix Invalid Geometries ---
+        logging.info("Checking for and fixing invalid geometries...")
+        invalid_before = combined_gdf[~combined_gdf.geometry.is_valid]
+        if not invalid_before.empty:
+            logging.warning(f"Found {len(invalid_before)} invalid geometries before fix. Applying .buffer(0).")
+            # Apply buffer(0) - this often fixes minor validity issues
+            try:
+                combined_gdf['geometry'] = combined_gdf.buffer(0)
+                # Check validity again after buffering
+                invalid_after = combined_gdf[~combined_gdf.geometry.is_valid]
+                if not invalid_after.empty:
+                     logging.warning(f"Found {len(invalid_after)} invalid geometries remaining after applying .buffer(0). Manual review may be needed.")
+                else:
+                     logging.info("All geometries appear valid after applying .buffer(0).")
+            except Exception as buffer_err:
+                logging.error(f"Error applying .buffer(0) to fix geometries: {buffer_err}. Proceeding without fix.")
+        else:
+            logging.info("No invalid geometries found.")
+        # --- End Fix Invalid Geometries ---
+
         # --- Save Combined GeoJSON ---
         combined_output_path = os.path.join(output_dir, "all_boundaries.geojson")
         try:
