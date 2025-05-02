@@ -1,88 +1,112 @@
-# NYC Geographies Crosswalk Generator
+# NYC Geographic Crosswalks
 
-This repository provides Python notebooks that generate comprehensive geographic crosswalk tables for various New York City (NYC) administrative and spatial boundaries, leveraging the [BetaNYC `nyc-boundaries` GeoJSON dataset](https://github.com/BetaNYC/nyc-boundaries).
+This repository provides Python tools (scripts and notebooks) to generate comprehensive geographic crosswalk tables for various New York City (NYC) administrative and spatial boundaries. It aims to provide up-to-date intersection data derived directly from official sources.
 
----
+## Acknowledgement & Evolution
 
-## What's Included?
+This repository significantly builds upon the concepts and data aggregation methods originally implemented in the [BetaNYC NYC Boundaries Map repository](https://github.com/BetaNYC/nyc-boundaries). The core goal remains the same: understanding overlaps between NYC's complex administrative and spatial boundaries.
 
-### 1. Wide-Format Crosswalk Tables (`NYC_Geographies_Generate_All_Wide_Crosswalks.ipynb`)
+This project refactors and extends the original BetaNYC data processing approach by:
+1.  **Migrating to Python:** Translating the data aggregation logic from Node.js (`shpjs`) to a pure Python framework using GeoPandas and related libraries.
+2.  **Focusing on Up-to-Date Sources:** Implementing a process (`generate_all_bounds.py`) designed to fetch the latest available versions* of boundary files directly from official city data portals (NYC Open Data, DCP, EDC).
+3.  **Pre-Calculating Crosswalks:** Shifting the focus from primarily supporting a real-time map backend to efficiently generating comprehensive, pre-calculated crosswalk flat files (both wide and long formats) suitable for analysis, distribution, and potentially powering other applications via files or an API.
 
-Generates individual wide-format CSV files, each representing a specific NYC geography type. Each CSV includes rows representing individual geographic features, with columns showing overlaps from other geography types as semicolon-separated identifiers.
-
-- **Example Use Cases:**
-  - Quickly identifying geographic intersections (e.g., ZIP codes within a Community District).
-  - Urban planning analysis.
-  - Administrative boundary reporting.
-
-### 2. Long-Form Crosswalk Tables (`NYC_Geographies_Generate_All_Longform_Crosswalks.ipynb`)
-
-Generates detailed long-form CSV files capturing pairwise intersections between geographic features, including precise intersection area and percentage overlap calculations.
-
-- **Example Use Cases:**
-  - Detailed spatial analytics and overlap calculations.
-  - GIS and spatial data analysis.
-  - Advanced urban planning or research studies.
-
-### 3. Interactive Selector (`NYC_Geographies_Crosswalk_Selector.ipynb`)
-
-An interactive notebook allowing users to quickly create customized crosswalk tables based on their selections of primary and target geographies.
-
-- **Example Use Cases:**
-  - Rapid prototyping and exploratory analysis.
-  - Interactive spatial data exploration.
+Essentially, this repository takes the foundational data definitions and overlap concept from the BetaNYC project and adapts it into a Python-based pipeline optimized for generating robust, versioned crosswalk datasets.
 
 ---
 
-## How It Works
+## Key Features & Motivation
 
-Each notebook performs the following spatial analysis steps:
+Understanding how different administrative and statistical boundaries overlap in NYC is crucial for city agencies, researchers, community boards, and the public. Building on the [original work by BetaNYC](https://github.com/BetaNYC/nyc-boundaries), this repository addresses this need by:
 
-- **Data Acquisition**: Downloads latest NYC geographic boundaries from BetaNYC.
-- **Spatial Operations**: Applies negative buffering and intersection-area filtering using GeoPandas to ensure only meaningful overlaps are included.
-- **Crosswalk Generation**: Exports organized CSV files clearly documenting geographic relationships.
+1.  **Consolidating Source Data:** A Python script (`generate_all_bounds.py`) downloads the latest available versions* of core NYC geographic boundaries from official sources (NYC Open Data, DCP, EDC) and aggregates them into a single, standardized GeoJSON file (`all_boundaries.geojson`). (This refactors the original Node.js approach into Python).
+2.  **Generating Pre-Calculated Crosswalks:** Jupyter notebooks leverage the consolidated GeoJSON to perform spatial analysis (intersections with negative buffering) and generate detailed crosswalk tables in two formats:
+    *   **Wide Format:** One CSV per primary geography, showing overlapping features from all other geographies in separate columns (ideal for quick lookups).
+    *   **Long Format:** One CSV per primary geography, detailing every significant pairwise overlap with precise intersection area and percentage calculations (ideal for detailed analysis).
+3.  **Providing User Tools:** Includes an interactive notebook (`Selector`) for generating custom crosswalks on the fly.
+4.  **Enhancing Performance for Consumers:** The pre-calculated crosswalks can significantly speed up applications that need to display boundary overlaps, compared to performing real-time spatial queries.
+5.  **Transparency:** Aims to provide clear metadata about the source data vintages used in each generated crosswalk set.
+
+*   \* **Note on Versions:** Currently, the specific version links for source data (e.g., URLs containing `_25a` for data from NYC Planning's 2025 Cycle A update) are defined within the `generate_all_bounds.py` script. Future enhancements may automate the detection of the absolute latest versions.*
 
 ---
 
-## Data Source
+## Repository Contents
 
-The geographic boundaries used in these notebooks are sourced directly from the [BetaNYC NYC Boundaries GeoJSON](https://github.com/BetaNYC/nyc-boundaries).
+*   **`generate_all_bounds.py`**: Python script to download source boundary data and create the base `all_boundaries_YYYYMMDD.geojson` file. **Run this first.** Includes geometry validity fixing.
+*   **`NYC_Geographies_Generate_All_Wide_Crosswalks.ipynb`**: Jupyter Notebook to generate a complete set of **wide-format** crosswalk CSVs (one per primary geography), zipped into a final archive. Requires the output from `generate_all_bounds.py`.
+*   **`NYC_Geographies_Generate_All_Long_Crosswalks.ipynb`**: Jupyter Notebook to generate a complete set of **long-format** crosswalk CSVs (one per primary geography), zipped into a final archive. Requires the output from `generate_all_bounds.py`.
+*   **`NYC_Geographies_Crosswalk_Selector.ipynb`**: Interactive Jupyter Notebook (best used in Google Colab) to generate *custom* wide or long-format crosswalks for user-selected primary and target geographies. Requires the output from `generate_all_bounds.py`.
+*   **`.gitignore`**: Excludes virtual environments and potentially large generated data files from Git.
+*   **`README.md`**: This file.
 
 ---
 
-## Dependencies
+## Getting Started & Workflow
 
-Ensure you have Python installed with the following packages:
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/MODA-NYC/nyc-geography-crosswalks.git
+    cd nyc-geography-crosswalks
+    ```
 
-- `geopandas`
-- `pandas`
-- `requests`
-- `shapely`
-- `ipywidgets` (interactive notebook)
-- `tqdm` (progress bars)
+2.  **Set up Python Environment:** (Recommended) Create and activate a virtual environment:
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate # On Linux/macOS
+    # .\venv\Scripts\activate # On Windows
+    ```
 
-These dependencies can be installed using:
+3.  **Install Dependencies:**
+    ```bash
+    # Consider creating a requirements.txt file
+    pip install geopandas pandas requests tqdm # Add ipywidgets google-colab-dependencies if using Selector in Colab
+    ```
+    *(Note: GeoPandas installation might require system dependencies like GDAL/GEOS/PROJ if wheels are not available for your system.)*
 
-```bash
-pip install geopandas pandas requests shapely ipywidgets tqdm
-```
+4.  **Generate Base GeoJSON:** Run the script to download sources and create the master boundary file. This file will be saved locally (default: `data/processed/all_boundaries_YYYYMMDD.geojson`). Specify a vintage label if desired.
+    ```bash
+    python generate_all_bounds.py # Add arguments if implemented, e.g., --vintage YYYYMMDD --output-base-dir ./output
+    ```
+    *(This step requires internet access and may take several minutes.)*
 
-## Getting Started
+5.  **Generate Crosswalks (Choose one or more):**
+    *   **Option A (All Wide):** Open and run the cells sequentially in `NYC_Geographies_Generate_All_Wide_Crosswalks.ipynb`. You will need to configure the input path in Cell 3 to point to the `all_boundaries_*.geojson` file created in Step 4 (e.g., via Google Drive mount if using Colab). Output: Zipped CSVs saved locally in Colab environment.
+    *   **Option B (All Long):** Open and run the cells sequentially in `NYC_Geographies_Generate_All_Long_Crosswalks.ipynb`. Configure the input path in Cell 3. Output: Zipped CSVs saved locally in Colab environment.
+    *   **Option C (Interactive Selector):** Open and run the cells sequentially in `NYC_Geographies_Crosswalk_Selector.ipynb` (Google Colab recommended). Configure the input path in Cell 3. Use the widgets to generate specific crosswalks on demand. Output: Individual CSV downloads via browser.
 
-1. Clone the repository:
-git clone [your-repository-url]
+---
 
-2. Open notebooks in Google Colab or your local Jupyter environment.
+## Pre-Generated Data (Via GitHub Releases)
 
-3. Run notebook cells sequentially to generate crosswalk files.
+For users who do not wish to run the generation process themselves, pre-generated sets of the crosswalk files (corresponding to specific run dates/vintages) are available for download as ZIP archives from the **[Releases Page](https://github.com/MODA-NYC/nyc-geography-crosswalks/releases)** of this repository. Each release typically includes:
 
-## Outputs
+*   Wide-format crosswalk CSVs (one per primary geography).
+*   Long-format crosswalk CSVs (one per primary geography).
+*   A `metadata.json` file detailing the source data versions used for that specific crosswalk vintage.
+*   The corresponding `all_boundaries_*.geojson` file used as input.
 
-Generated CSV files are automatically zipped and downloaded:
-- all_geographies_wide_crosswalks.zip (Wide format)
-- all_geographies_longform_crosswalks.zip (Long-form format)
-- Custom CSV files (Interactive Selector notebook)
+---
+
+## API Access (Planned)
+
+A future goal is to provide an API endpoint for accessing the latest generated crosswalk data programmatically. This API would return crosswalk results in JSON format and include metadata about the source data vintages. Details will be added here once available. Querying specific historical vintage combinations via the API is not currently planned but may be considered based on user needs (users needing specific historical data can currently download older data sets from the Releases page).
+
+---
+
+## Dependencies Summary
+
+*   Python 3.x
+*   GeoPandas & Dependencies (Shapely, Fiona, PyPROJ - often require GDAL, GEOS, PROJ system libraries)
+*   Pandas
+*   Requests
+*   Tqdm (for progress bars)
+*   ipywidgets (for `Selector` notebook)
+*   google.colab (for notebooks in Colab environment)
+*   zipfile, os (Standard Library)
+
+---
 
 ## Maintainer
-Name: Nathan Storey
-Contact: https://github.com/npstorey
+
+Nathan Storey - [github.com/npstorey](https://github.com/npstorey)
