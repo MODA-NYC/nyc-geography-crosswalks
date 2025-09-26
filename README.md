@@ -42,6 +42,30 @@ Understanding how different administrative and statistical boundaries overlap in
 
 ---
 
+## Geography IDs and Abbreviations
+
+The following table maps each geography to the short ID used throughout the code (see `generate_all_bounds.py`). Use these IDs when selecting or referencing geographies in scripts and notebooks.
+
+| Geography | ID |
+| --- | --- |
+| Community Districts | `cd` |
+| Police Precincts | `pp` |
+| Sanitation Districts | `dsny` |
+| Fire Battalions | `fb` |
+| School Districts | `sd` |
+| Health Center Districts | `hc` |
+| City Council Districts | `cc` |
+| Congressional Districts | `nycongress` |
+| State Assembly Districts | `sa` |
+| State Senate Districts | `ss` |
+| Business Improvement Districts | `bid` |
+| Neighborhood Tabulation Areas | `nta` |
+| Zip Codes | `zipcode` |
+| Historic Districts | `hd` |
+| Industrial Business Zones | `ibz` |
+
+---
+
 ## Getting Started & Workflow
 
 1.  **Clone the Repository:**
