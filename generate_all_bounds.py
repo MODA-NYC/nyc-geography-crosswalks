@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # --- Config ---
 AUTO_DETECT_LATEST = True  # Attempt to auto-detect latest DCP cycle letters (e.g., 25b, 25c)
 PREFERRED_CYCLE = None     # Optionally pin a cycle letter like 'c'; overrides auto if provided
+EXTERNAL_DATA_DIR = os.path.join('data', 'external')  # Optional local fallbacks for protected sources
 
 # --- Dataset Definitions (Add ALL datasets here eventually) ---
 datasets = [
@@ -257,9 +258,37 @@ def process_dataset(dataset_info: dict) -> Union[Tuple[geopandas.GeoDataFrame, d
             logging.info(f"Downloaded zip for {dataset_id} successfully.")
         except requests.exceptions.RequestException as e:
             logging.error(f"Failed to download zip for {dataset_id} from {resolved_url}. Error: {e}")
-            meta["status"] = "download_error"
-            meta["error"] = str(e)
-            return None, meta
+            # --- Local fallback for protected or blocked sources ---
+            fallback_zip_path = None
+            try:
+                os.makedirs(EXTERNAL_DATA_DIR, exist_ok=True)
+            except Exception:
+                pass
+            # Heuristic: look for a pre-downloaded file named after dataset id
+            # e.g., data/external/ibz.zip or a directory data/external/ibz/
+            candidate_files = [
+                os.path.join(EXTERNAL_DATA_DIR, f"{dataset_id}.zip"),
+                os.path.join(EXTERNAL_DATA_DIR, f"{dataset_id}.ZIP"),
+            ]
+            for cpath in candidate_files:
+                if os.path.isfile(cpath):
+                    fallback_zip_path = cpath
+                    break
+            if fallback_zip_path:
+                logging.warning(f"Using local fallback for {dataset_id}: {fallback_zip_path}")
+                try:
+                    with open(fallback_zip_path, 'rb') as lf:
+                        zip_content = io.BytesIO(lf.read())
+                    # proceed as if downloaded
+                except Exception as le:
+                    logging.error(f"Failed reading local fallback for {dataset_id}: {le}")
+                    meta["status"] = "download_error"
+                    meta["error"] = str(e)
+                    return None, meta
+            else:
+                meta["status"] = "download_error"
+                meta["error"] = str(e)
+                return None, meta
 
         # --- Read Shapefile from Zip ---  (MODIFIED LOGIC)
         try:
