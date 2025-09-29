@@ -53,8 +53,8 @@ Understanding how different administrative and statistical boundaries overlap in
 ## Repository Contents
 
 *   **`scripts/generate_all_bounds.py`**: Python script to download source boundary data and create the base `all_boundaries_YYYYMMDD.geojson` file. **Run this first.** Includes geometry validity fixing.
-*   **`NYC_Geographies_Generate_All_Wide_Crosswalks.ipynb`**: Thin wrapper that calls `scripts/build_crosswalks.py` for reproducible runs. Requires the output from `scripts/generate_all_bounds.py`.
-*   **`NYC_Geographies_Generate_All_Long_Crosswalks.ipynb`**: Thin wrapper that calls `scripts/build_crosswalks.py` for reproducible runs. Requires the output from `scripts/generate_all_bounds.py`.
+*   **`notebooks/NYC_Geographies_Generate_All_Wide_Crosswalks.ipynb`**: Thin wrapper that calls `scripts/build_crosswalks.py` for reproducible runs. Requires the output from `scripts/generate_all_bounds.py`.
+*   **`notebooks/NYC_Geographies_Generate_All_Long_Crosswalks.ipynb`**: Thin wrapper that calls `scripts/build_crosswalks.py` for reproducible runs. Requires the output from `scripts/generate_all_bounds.py`.
 *   **`NYC_Geographies_Crosswalk_Selector.ipynb`**: Interactive Jupyter Notebook (best used in Google Colab) to generate *custom* wide or long-format crosswalks for user-selected primary and target geographies. Requires the output from `generate_all_bounds.py`.
 *   **`.gitignore`**: Excludes virtual environments and potentially large generated data files from Git.
 *   **`README.md`**: This file.
@@ -86,6 +86,11 @@ The following table maps each geography to the short ID used throughout the code
 Note: `cc_upcoming` has been retired and is no longer generated or included in outputs.
 
 ---
+
+## Usage Options
+
+- CLI (recommended): `python scripts/make_run.py --zip-artifacts` (runs bounds → crosswalks, writes timestamped outputs and zips under `outputs/<run-id>/`).
+- Notebooks: see the `notebooks/` folder; they call `scripts/build_crosswalks.py` and require a prior bounds run.
 
 ## Getting Started & Workflow
 
