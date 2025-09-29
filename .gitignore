@@ -1,5 +1,9 @@
 # Generated data
 data/processed/
+outputs/
+
+# Virtual environments
+.venv/
 
 # System files
 .DS_Store 
