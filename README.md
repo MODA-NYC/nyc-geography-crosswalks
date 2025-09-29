@@ -31,6 +31,25 @@ Understanding how different administrative and statistical boundaries overlap in
 
 ---
 
+## Methodology Notes
+
+- **ZIP Codes are MODZCTAs**: The `zipcode` layer uses DOHMH MODZCTA polygons (`modzcta`). MODZCTAs approximate USPS ZIP boundaries and may be multipart. Results may differ from USPS definitions. We document this explicitly to set expectations for users.
+
+- **Geometry validity**: After combining all inputs, we check for invalid geometries and apply `buffer(0)` to attempt a non-destructive fix. This can slightly adjust slivers/holes but improves robustness of spatial operations.
+
+- **Intersection de-noising (buffer) and thresholds**: Crosswalk calculations use a small negative buffer applied only during intersection to reduce line-touching artifacts. Candidate inclusion is not gated by this buffer. After intersection, we apply a minimum intersection-area threshold and an epsilon to suppress numerical noise. Defaults are documented in `scripts/build_crosswalks.py` and captured in `crosswalks_meta.json` per run.
+
+- **Multipart primaries**: Primary features are first dissolved by `nameCol` so multipart geometries (e.g., some MODZCTAs) are treated as a single unit. This prevents duplicate rows for a given primary–other pair and yields correct percentages against the total primary area.
+
+- **Per-run outputs and metadata**: Each run is saved under `outputs/<UTC timestamp>/` and includes:
+  - `all_boundaries.geojson` and `run_meta.json` (source URLs, resolved cycles, config, git SHA)
+  - `longform/` and `wide/` crosswalk CSVs and `crosswalks_meta.json` (thresholds and IDs used)
+  These folders are ignored by git; publish as Release assets for distribution.
+
+- **IBZ source access**: The EDC IBZ URL may be protected by a web challenge. The script attempts download and, on failure, falls back to a locally provided `data/external/ibz.zip`. For reproducibility, include this file when creating a Release for a given vintage.
+
+---
+
 ## Repository Contents
 
 *   **`generate_all_bounds.py`**: Python script to download source boundary data and create the base `all_boundaries_YYYYMMDD.geojson` file. **Run this first.** Includes geometry validity fixing.
