@@ -579,6 +579,14 @@ if __name__ == "__main__":
             logging.error(f"Failed to save combined boundaries GeoJSON. Error: {e}")
             failed_datasets.append(f"all_boundaries.geojson (Save Error: {e})")
 
+        # Also save/overwrite a convenience copy under data/processed for notebook users
+        latest_copy_path = os.path.join("data", "processed", "all_boundaries.geojson")
+        try:
+            combined_gdf.to_file(latest_copy_path, driver='GeoJSON')
+            logging.info(f"Saved convenience copy to {latest_copy_path}")
+        except Exception as e:
+            logging.error(f"Failed to save convenience copy of all_boundaries.geojson. Error: {e}")
+
         # Write run metadata
         meta_path = os.path.join(run_dir, "run_meta.json")
         try:
