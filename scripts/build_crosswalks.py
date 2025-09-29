@@ -184,6 +184,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--buffer-feet", type=float, default=-50.0, help="Negative buffer applied only in intersection calculations")
     p.add_argument("--min-area-final", type=float, default=100.0, help="Minimum intersection area (sq ft) to include a pair")
     p.add_argument("--epsilon", type=float, default=1e-6, help="Tiny epsilon area to suppress numeric noise")
+    # cc_upcoming was a temporary dataset during redistricting and is retired.
+    # Keep it excluded by default so it never appears in new outputs.
     p.add_argument("--exclude-ids", nargs='*', default=['cc_upcoming'], help="Geography IDs to exclude entirely")
     p.add_argument("--primary-only", nargs='*', default=None, help="If provided, build only for these primary IDs")
     p.add_argument("--targets", nargs='*', default=None, help="If provided, limit target geography IDs to this set")

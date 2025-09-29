@@ -64,6 +64,8 @@ The following table maps each geography to the short ID used throughout the code
 | Historic Districts | `hd` |
 | Industrial Business Zones | `ibz` |
 
+Note: `cc_upcoming` has been retired and is no longer generated or included in outputs.
+
 ---
 
 ## Getting Started & Workflow
