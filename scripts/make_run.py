@@ -54,7 +54,7 @@ def main() -> None:
 
     # Step 1: Bounds
     # Note: generate_all_bounds.py uses internal config; preferred-cycle is informational until exposed as arg.
-    bounds_script = repo_root / 'generate_all_bounds.py'
+    bounds_script = repo_root / 'scripts' / 'generate_all_bounds.py'
     run(['python', str(bounds_script)])
 
     # Find latest run directory made by the script

@@ -52,9 +52,9 @@ Understanding how different administrative and statistical boundaries overlap in
 
 ## Repository Contents
 
-*   **`generate_all_bounds.py`**: Python script to download source boundary data and create the base `all_boundaries_YYYYMMDD.geojson` file. **Run this first.** Includes geometry validity fixing.
-*   **`NYC_Geographies_Generate_All_Wide_Crosswalks.ipynb`**: Jupyter Notebook to generate a complete set of **wide-format** crosswalk CSVs (one per primary geography), zipped into a final archive. Requires the output from `generate_all_bounds.py`.
-*   **`NYC_Geographies_Generate_All_Long_Crosswalks.ipynb`**: Jupyter Notebook to generate a complete set of **long-format** crosswalk CSVs (one per primary geography), zipped into a final archive. Requires the output from `generate_all_bounds.py`.
+*   **`scripts/generate_all_bounds.py`**: Python script to download source boundary data and create the base `all_boundaries_YYYYMMDD.geojson` file. **Run this first.** Includes geometry validity fixing.
+*   **`NYC_Geographies_Generate_All_Wide_Crosswalks.ipynb`**: Thin wrapper that calls `scripts/build_crosswalks.py` for reproducible runs. Requires the output from `scripts/generate_all_bounds.py`.
+*   **`NYC_Geographies_Generate_All_Long_Crosswalks.ipynb`**: Thin wrapper that calls `scripts/build_crosswalks.py` for reproducible runs. Requires the output from `scripts/generate_all_bounds.py`.
 *   **`NYC_Geographies_Crosswalk_Selector.ipynb`**: Interactive Jupyter Notebook (best used in Google Colab) to generate *custom* wide or long-format crosswalks for user-selected primary and target geographies. Requires the output from `generate_all_bounds.py`.
 *   **`.gitignore`**: Excludes virtual environments and potentially large generated data files from Git.
 *   **`README.md`**: This file.
@@ -111,11 +111,12 @@ Note: `cc_upcoming` has been retired and is no longer generated or included in o
 
 4.  **Generate Base GeoJSON:** Run the script to download sources and create the master boundary file. This file will be saved locally (default: `data/processed/all_boundaries_YYYYMMDD.geojson`). Specify a vintage label if desired.
     ```bash
-    python generate_all_bounds.py # Add arguments if implemented, e.g., --vintage YYYYMMDD --output-base-dir ./output
+    python scripts/generate_all_bounds.py # Add arguments if implemented, e.g., --vintage YYYYMMDD --output-base-dir ./output
     ```
     *(This step requires internet access and may take several minutes.)*
 
 5.  **Generate Crosswalks (Choose one or more):**
+    *   **Preferred:** `python scripts/make_run.py --zip-artifacts` (runs bounds + crosswalks; writes zips in the run folder)
     *   **Option A (All Wide):** Open and run the cells sequentially in `NYC_Geographies_Generate_All_Wide_Crosswalks.ipynb`. You will need to configure the input path in Cell 3 to point to the `all_boundaries_*.geojson` file created in Step 4 (e.g., via Google Drive mount if using Colab). Output: Zipped CSVs saved locally in Colab environment.
     *   **Option B (All Long):** Open and run the cells sequentially in `NYC_Geographies_Generate_All_Long_Crosswalks.ipynb`. Configure the input path in Cell 3. Output: Zipped CSVs saved locally in Colab environment.
     *   **Option C (Interactive Selector):** Open and run the cells sequentially in `NYC_Geographies_Crosswalk_Selector.ipynb` (Google Colab recommended). Configure the input path in Cell 3. Use the widgets to generate specific crosswalks on demand. Output: Individual CSV downloads via browser.
