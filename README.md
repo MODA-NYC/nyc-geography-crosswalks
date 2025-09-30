@@ -2,32 +2,39 @@
 
 This repository provides Python tools (scripts and notebooks) to generate comprehensive geographic crosswalk tables for various New York City (NYC) administrative and spatial boundaries. It aims to provide up-to-date intersection data derived directly from official sources.
 
-## Acknowledgement & Evolution
+For a ready-to-use dataset, download artifacts from the [Latest Release](https://github.com/MODA-NYC/nyc-geography-crosswalks/releases/latest): the crosswalks ZIP (wide + long CSVs), the exact boundaries GeoJSON used for that vintage, and per-run metadata files (`run_meta.json`, `crosswalks_meta.json`).
 
-This repository significantly builds upon the concepts and data aggregation methods originally implemented in the [BetaNYC NYC Boundaries Map repository](https://github.com/BetaNYC/nyc-boundaries). The core goal remains the same: understanding overlaps between NYC's complex administrative and spatial boundaries.
+## Table of Contents
 
-This project refactors and extends the original BetaNYC data processing approach by:
-1.  **Migrating to Python:** Translating the data aggregation logic from Node.js (`shpjs`) to a pure Python framework using GeoPandas and related libraries.
-2.  **Focusing on Up-to-Date Sources:** Implementing a process (`generate_all_bounds.py`) designed to fetch the latest available versions* of boundary files directly from official city data portals (NYC Open Data, DCP, EDC).
-3.  **Pre-Calculating Crosswalks:** Shifting the focus from primarily supporting a real-time map backend to efficiently generating comprehensive, pre-calculated crosswalk flat files (both wide and long formats) suitable for analysis, distribution, and potentially powering other applications via files or an API.
+- [Key Features & Motivation](#key-features--motivation)
+- [Methodology Notes](#methodology-notes)
+- [Repository Contents](#repository-contents)
+- [Geography IDs and Abbreviations](#geography-ids-and-abbreviations)
+- [Usage Options](#usage-options)
+- [Getting Started & Workflow](#getting-started--workflow)
+- [Pre-Generated Data (Via GitHub Releases)](#pre-generated-data-via-github-releases)
+- [API Access (Planned)](#api-access-planned)
+- [Dependencies Summary](#dependencies-summary)
+- [Acknowledgement & Evolution](#acknowledgement--evolution)
+- [Maintainer](#maintainer)
 
-Essentially, this repository takes the foundational data definitions and overlap concept from the BetaNYC project and adapts it into a Python-based pipeline optimized for generating robust, versioned crosswalk datasets.
-
----
+ 
 
 ## Key Features & Motivation
 
 Understanding how different administrative and statistical boundaries overlap in NYC is crucial for city agencies, researchers, community boards, and the public. Building on the [original work by BetaNYC](https://github.com/BetaNYC/nyc-boundaries), this repository addresses this need by:
 
 1.  **Consolidating Source Data:** A Python script (`generate_all_bounds.py`) downloads the latest available versions* of core NYC geographic boundaries from official sources (NYC Open Data, DCP, EDC) and aggregates them into a single, standardized GeoJSON file (`all_boundaries.geojson`). (This refactors the original Node.js approach into Python).
-2.  **Generating Pre-Calculated Crosswalks:** Jupyter notebooks leverage the consolidated GeoJSON to perform spatial analysis (intersections with negative buffering) and generate detailed crosswalk tables in two formats:
+2.  **Generating Pre-Calculated Crosswalks:** Scripts and notebooks perform the spatial analysis (intersections with a small negative buffer to suppress edge artifacts). Prefer the reproducible CLI `scripts/make_run.py`, which produces crosswalk tables in two formats:
     *   **Wide Format:** One CSV per primary geography, showing overlapping features from all other geographies in separate columns (ideal for quick lookups).
     *   **Long Format:** One CSV per primary geography, detailing every significant pairwise overlap with precise intersection area and percentage calculations (ideal for detailed analysis).
 3.  **Providing User Tools:** Includes an interactive notebook (`Selector`) for generating custom crosswalks on the fly.
 4.  **Enhancing Performance for Consumers:** The pre-calculated crosswalks can significantly speed up applications that need to display boundary overlaps, compared to performing real-time spatial queries.
-5.  **Transparency:** Aims to provide clear metadata about the source data vintages used in each generated crosswalk set.
+5.  **Transparency:** Each run records provenance and configuration in `run_meta.json` (source URLs, resolved cycles, config, git SHA) and `crosswalks_meta.json` (thresholds and excluded IDs). Releases bundle these files alongside the datasets.
 
-*   \* **Note on Versions:** Currently, the specific version links for source data (e.g., URLs containing `_25a` for data from NYC Planning's 2025 Cycle A update) are defined within the `generate_all_bounds.py` script. Future enhancements may automate the detection of the absolute latest versions.*
+6.  **Pre-generated releases:** Ready-to-use artifacts are published on GitHub Releases (see “Latest Release” link above) including the crosswalks ZIP, the exact boundaries GeoJSON used, and the metadata files.
+
+*   \* **Note on Versions:** The canonical sources for any published dataset are pinned in each release’s metadata: `run_meta.json` (source URLs and cycles) and `crosswalks_meta.json` (thresholds and excluded IDs). The code contains lookups for known cycles, but releases are the authoritative record for exact vintages.*
 
 ---
 
@@ -155,6 +162,19 @@ A future goal is to provide an API endpoint for accessing the latest generated c
 *   ipywidgets (for `Selector` notebook)
 *   google.colab (for notebooks in Colab environment)
 *   zipfile, os (Standard Library)
+
+---
+
+## Acknowledgement & Evolution
+
+This repository significantly builds upon the concepts and data aggregation methods originally implemented in the [BetaNYC NYC Boundaries Map repository](https://github.com/BetaNYC/nyc-boundaries). The core goal remains the same: understanding overlaps between NYC's complex administrative and spatial boundaries.
+
+This project refactors and extends the original BetaNYC data processing approach by:
+1.  **Migrating to Python:** Translating the data aggregation logic from Node.js (`shpjs`) to a pure Python framework using GeoPandas and related libraries.
+2.  **Focusing on Up-to-Date Sources:** Implementing a process (`generate_all_bounds.py`) designed to fetch the latest available versions* of boundary files directly from official city data portals (NYC Open Data, DCP, EDC).
+3.  **Pre-Calculating Crosswalks:** Shifting the focus from primarily supporting a real-time map backend to efficiently generating comprehensive, pre-calculated crosswalk flat files (both wide and long formats) suitable for analysis, distribution, and potentially powering other applications via files or an API.
+
+Essentially, this repository takes the foundational data definitions and overlap concept from the BetaNYC project and adapts it into a Python-based pipeline optimized for generating robust, versioned crosswalk datasets.
 
 ---
 
